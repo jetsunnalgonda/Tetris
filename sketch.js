@@ -1,4 +1,4 @@
-var tetromino = [];
+var tetromino;
 var game;
 
 function setup() {
@@ -9,61 +9,57 @@ function setup() {
 	console.log("game.gridSizeX = " + game.gridSizeX);
 	console.log("game.gridSizeY = " + game.gridSizeY);
 
-	// Create tetromino objects
-	for (var i = 0; i <= 6; i++) {
-		tetromino.push(new Tetromino(i));
-	}
-	// Draw playing field
-	game.drawPlayingField();
-	// setupPlayingField(300, 400);
-
-	// tetromino[0].rotate();
-	tetromino[0].pos.x = 1;
-	tetromino[0].render();
-
-	tetromino[1].pos.x = 4;
-	tetromino[1].pos.y = 4;
-	tetromino[1].rotate();
-	tetromino[1].render();
-
-	tetromino[2].pos.x = 12;
-	tetromino[2].pos.y = 6;
-	tetromino[2].render();
-
-	tetromino[3].pos.x = 4;
-	tetromino[3].pos.y = 10;
-	tetromino[3].render();
-
-	tetromino[4].pos.x = 10;
-	tetromino[4].pos.y = 12;
-	tetromino[4].render();
-
-	tetromino[5].pos.x = 8;
-	tetromino[5].pos.y = 37;
-	tetromino[5].render();
-
-	tetromino[6].pos.x = 8;
-	tetromino[6].pos.y = 21;
-	tetromino[6].rotate();
-	tetromino[6].render();
+	tetromino = new Tetromino();
+	tetromino.pos.x = floor(game.gridSizeX / 2);
+	tetromino.pos.y = 0;
+	tetromino.render();
 
 }
 
-// function setupPlayingField(w, h) {
-// 	var border = 10;
-// 	w = w + border + 1 - w % game.blockSize;
-// 	h = h + border + 1 - h % game.blockSize;
-// 	translate(20, 20);
-// 	push()
-// 	stroke(255);
-// 	strokeWeight(border);
-// 	noFill();
-// 	rect(0, 0, w, h);
-// 	pop();
-// 	translate(border / 2, border / 2);
-//
-// }
-
 function draw() {
 
+		game.drawPlayingField();
+		game.animate(tetromino);
+
+		// checkKeys();
+
+		if (tetromino.landed && !game.gameOver) {
+			tetromino = new Tetromino();
+			tetromino.pos.x = floor(game.gridSizeX / 2);
+			tetromino.pos.y = 0;
+			// tetromino.render();
+			game.animate(tetromino);
+			if (game.gameOver) {
+				console.log("Game Over");
+			}
+		}
+
+}
+
+function checkKeys() {
+	if (keyIsDown(LEFT_ARROW)) {
+		game.animate(tetromino, 1);
+	} else if (keyIsDown(RIGHT_ARROW)) {
+		game.animate(tetromino, 2);
+	} else if (keyIsDown(UP_ARROW)) {
+		game.animate(tetromino, 3);
+	} else if (keyIsDown(DOWN_ARROW)) {
+		game.animate(tetromino, 4);
+	}
+}
+
+function keyPressed() {
+	if (game.gameOver) { return; }
+  if (keyCode == LEFT_ARROW) {
+    game.animate(tetromino, 1);
+  } else if (keyCode == RIGHT_ARROW) {
+    game.animate(tetromino, 2);
+  } else if (keyCode == UP_ARROW) {
+    console.log("rotate");
+		game.animate(tetromino, 3);
+  } else if (keyCode == DOWN_ARROW) {
+    console.log("speed up");
+		game.animate(tetromino, 4);
+  }
+  return 0;
 }

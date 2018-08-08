@@ -1,12 +1,16 @@
 class Tetromino {
   constructor(type) {
-    this.type = type || 0;
+    // if (type === undefined) { type = 0; }
+    this.selectedType = type;
     this.tetrominoes = this.getTetrominoes();
-    this.shape = this.tetrominoes[type];
+    this.type = this.makeType();
+    this.shape;
 
-    this._blockSize = 10;
+    this._blockSize = 15;
     this.rotation = 0;
     this._pos = createVector(0, 0);
+    this.collisionDetect = true;
+    this.landed = false;
   }
   getTetrominoes() {
     var tet = [];
@@ -40,6 +44,17 @@ class Tetromino {
                [0, 0, 0, 0]]);
     return tet;
   }
+  makeType() {
+    var numberOfTetrominoes = this.tetrominoes.length;
+
+    this.type = (this.selectedType >= 0) &&
+                (this.selectedType < numberOfTetrominoes) &&
+                floor(this.selectedType) == this.selectedType ?
+                this.selectedType :
+                round(random(numberOfTetrominoes - 1));
+
+    this.shape = this.tetrominoes[this.type];
+  }
 
   get blockSize() {
     return this._blockSize;
@@ -57,17 +72,29 @@ class Tetromino {
     this._pos = newValue;
   }
 
-  rotate() {
+  rotate(rotateCounterClocwise) {
     this.rotation = (this.rotation  + 1) % 4;
     var rotatedShape = [];
     for (var row of this.shape) {
       rotatedShape.push([...row]);
     }
-    for (var row in this.shape) {
-      for (var col in this.shape) {
-        rotatedShape[col][row] = this.shape[row][col];
+    var maxRow = this.shape.length - 1;
+    var maxCol = this.shape[0].length - 1;
+
+    if (rotateCounterClocwise) {
+      for (var row in this.shape) {
+        for (var col in this.shape) {
+          rotatedShape[maxCol - col][row] = this.shape[row][col];
+        }
+      }
+    } else {
+      for (var row in this.shape) {
+        for (var col in this.shape) {
+          rotatedShape[col][maxRow - row] = this.shape[row][col];
+        }
       }
     }
+
 
     for (var row in this.shape) {
       this.shape[row] = [...rotatedShape[row]];
@@ -92,5 +119,4 @@ class Tetromino {
     }
     pop();
   }
-
 }
